@@ -131,7 +131,7 @@ export default class Tree extends React.Component {
           // Offset so that first pan and zoom does not jump back to [0,0] coords
           .scale(zoom)
           .translate([translate.x, translate.y]),
-      );
+      ).on('wheel.zoom', null);
     }
   }
 
