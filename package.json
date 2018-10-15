@@ -21,7 +21,7 @@
     "docs:clean": "rimraf docs/components/* && rimraf docs/util/*",
     "release": "yarn test && yarn build && yarn docs && git commit -a",
     "preanalyze": "rimraf stats.json",
-    "analyze": "webpack --config webpack.config.js --env build --profile --json > stats.json && echo '==> http://webpack.github.io/analyse/'"
+    "analyze": "webpack --config webpack.config.js --env build --profile --json > stats.json && echo '==> http://webpack.github.io/analyse/'",
     "postinstall": "yarn clean:lib && webpack --progress --colors --env build"
   },
   "lint-staged": {
