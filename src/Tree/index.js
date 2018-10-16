@@ -64,9 +64,13 @@ export default class Tree extends React.Component {
   componentWillReceiveProps(nextProps) {
     // Clone new data & assign internal properties
     if (this.props.data !== nextProps.data) {
+      this.internalState.initialRender = true;
       this.setState({
         data: this.assignInternalProperties(clone(nextProps.data)),
       });
+      setTimeout(() => {
+        this.internalState.initialRender = false;
+      }, 0);
     }
 
     this.internalState.d3 = this.calculateD3Geometry(nextProps);
@@ -109,29 +113,31 @@ export default class Tree extends React.Component {
     const g = select(`.${rd3tGClassName}`);
 
     if (zoomable) {
-      svg.call(
-        behavior
-          .zoom()
-          .scaleExtent([scaleExtent.min, scaleExtent.max])
-          .on('zoom', () => {
-            g.attr('transform', `translate(${event.translate}) scale(${event.scale})`);
-            if (typeof onUpdate === 'function') {
-              // This callback is magically called not only on "zoom", but on "drag", as well,
-              // even though event.type == "zoom".
-              // Taking advantage of this and not writing a "drag" handler.
-              onUpdate({
-                node: null,
-                zoom: event.scale,
-                translate: { x: event.translate[0], y: event.translate[1] },
-              });
-              this.internalState.d3.scale = event.scale;
-              this.internalState.d3.translate = { x: event.translate[0], y: event.translate[1] };
-            }
-          })
-          // Offset so that first pan and zoom does not jump back to [0,0] coords
-          .scale(zoom)
-          .translate([translate.x, translate.y]),
-      ).on('wheel.zoom', null);
+      svg
+        .call(
+          behavior
+            .zoom()
+            .scaleExtent([scaleExtent.min, scaleExtent.max])
+            .on('zoom', () => {
+              g.attr('transform', `translate(${event.translate}) scale(${event.scale})`);
+              if (typeof onUpdate === 'function') {
+                // This callback is magically called not only on "zoom", but on "drag", as well,
+                // even though event.type == "zoom".
+                // Taking advantage of this and not writing a "drag" handler.
+                onUpdate({
+                  node: null,
+                  zoom: event.scale,
+                  translate: { x: event.translate[0], y: event.translate[1] },
+                });
+                this.internalState.d3.scale = event.scale;
+                this.internalState.d3.translate = { x: event.translate[0], y: event.translate[1] };
+              }
+            })
+            // Offset so that first pan and zoom does not jump back to [0,0] coords
+            .scale(zoom)
+            .translate([translate.x, translate.y]),
+        )
+        .on('wheel.zoom', null);
     }
   }
 
